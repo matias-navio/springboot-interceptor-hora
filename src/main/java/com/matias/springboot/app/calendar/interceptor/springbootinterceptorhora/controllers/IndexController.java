@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/app")
 public class IndexController {
@@ -18,22 +20,26 @@ public class IndexController {
     private Integer hOpen;
     @Value("${config.hora.close}")
     private Integer hClose;
+    Map<String, Object> data = new HashMap<>();
 
+    
     @GetMapping("/foo")
-    public ResponseEntity<?> foo(){
-
-        Map<String, String> data = new HashMap<>();
-        data.put("title", "Bienvenido al sistema de atencion al cliente");
-        data.put("time", new Date().toString());
+    public ResponseEntity<?> foo(HttpServletRequest request){
+        
+        if(request.getAttribute("message") != null){
+            data.put("title", "Bienvenido al sistema de atencion al cliente");
+            data.put("time", new Date());
+            data.put("message", request.getAttribute("message"));
+        }
+        // else{
+        //     data.put("title", "Bienvenido al sistema de atencion al cliente");
+        //     data.put("time", new Date());
+        //     data.put("error", request.getAttribute("error"));
+        // }
+        
         return ResponseEntity.ok(data);
+
     }
 
-    @GetMapping("/close")
-    public ResponseEntity <?> close(){
-
-        Map<String, String> data = new HashMap<>();
-        data.put("error", "Fuera de horario de atencion, vualva a partir de las " + hOpen + " hasta " + hClose);
-        data.put("time", new Date().toString());
-        return ResponseEntity.ok(data);
-    }
+    
 }
